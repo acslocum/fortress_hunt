@@ -18,8 +18,10 @@ public class CookieTracker {
     }
 
     protected static Cookie findCookie(Cookie[] cookies) {
-        for(Cookie cookie : cookies) {
-            if(cookie !=null && FORTRESS_COOKIE.equals(cookie.getName())) return cookie;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie !=null && FORTRESS_COOKIE.equals(cookie.getName())) return cookie;
+            }
         }
         return new Cookie(FORTRESS_COOKIE,"");
     }

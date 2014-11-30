@@ -99,6 +99,13 @@ public class CookieTrackerTest {
     }
     
     @Test
+    public void shouldCreateCookieIfNoCookies() {
+        Cookie foundCookie = CookieTracker.findCookie(null);
+        assertEquals(CookieTracker.FORTRESS_COOKIE,foundCookie.getName());
+        assertEquals("",foundCookie.getValue());
+    }
+    
+    @Test
     public void shouldEnumerateYearsFound() {
         Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005");
         String[] years = new CookieTracker(cookie).years();
