@@ -8,4 +8,5 @@ uses maven & embedded tomcat
 to get rolling:
 
 mvn package
+
 sh target/bin/webapp
