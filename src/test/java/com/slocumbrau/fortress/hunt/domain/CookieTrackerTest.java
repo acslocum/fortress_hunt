@@ -2,6 +2,8 @@ package com.slocumbrau.fortress.hunt.domain;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import javax.servlet.http.Cookie;
 
 import org.junit.Before;
@@ -24,6 +26,12 @@ public class CookieTrackerTest {
     @Test
     public void shouldIdentifyTwoYearsScannedFromCookie() {
         Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE, "2004|2005");
+        assertEquals(2,new CookieTracker(cookie).count());
+    }
+
+    @Test
+    public void shouldIdentifyTwoYearsScannedFromCookieIfOneFakeCreepsIn() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE, "2004|2005|2020");
         assertEquals(2,new CookieTracker(cookie).count());
     }
 
@@ -123,6 +131,54 @@ public class CookieTrackerTest {
         assertEquals("1999",years[0]);
         assertEquals("2004",years[1]);
         assertEquals("2013",years[2]);
+    }
+    
+    @Test
+    public void shouldShowAllRemainingYearsForNewUser() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,null);
+        assertEquals(12,new CookieTracker(cookie).remainingYears().size());
+    }
+
+    @Test
+    public void shouldShowNoRemainingYearsForCompleteUser() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014");
+        assertEquals(0,new CookieTracker(cookie).remainingYears().size());
+    }
+
+    @Test
+    public void shouldShowOneRemainingYearsForNearlyCompleteUser() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013");
+        List<String> remainingYears = new CookieTracker(cookie).remainingYears();
+        assertEquals(1,remainingYears.size());
+        assertTrue(remainingYears.contains("2014"));
+    }
+    
+    @Test
+    public void shouldShowOneRemainingYearsUserWhoTriedToCheat() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2020");
+        List<String> remainingYears = new CookieTracker(cookie).remainingYears();
+        assertEquals(1,remainingYears.size());
+        assertTrue(remainingYears.contains("2014"));
+    }
+    
+    @Test
+    public void shouldReportSuccessWhenAllSheetsFound() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2014");
+        assertTrue(new CookieTracker(cookie).success());
+
+    }
+
+    @Test
+    public void shouldNotReportSuccessWhenFakeSheetsFound() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005|2006|2007|2008|2009|2010|2011|2012|2013|2020");
+        assertFalse(new CookieTracker(cookie).success());
+
+    }
+
+    @Test
+    public void shouldReportFailureWhenMissingAYear() {
+        Cookie cookie = new Cookie(CookieTracker.FORTRESS_COOKIE,"2003|2004|2005|2006|2007|2008|2010|2011|2012|2013|2014");
+        assertFalse(new CookieTracker(cookie).success());
     }
 
 }

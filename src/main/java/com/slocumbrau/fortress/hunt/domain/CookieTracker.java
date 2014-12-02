@@ -1,12 +1,16 @@
 package com.slocumbrau.fortress.hunt.domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 
 public class CookieTracker {
 
     public static final String FORTRESS_COOKIE = "fortress_hunt_cookie";
+    public static final int SHEET_COUNT = 12;
+    public static final int GUEST_COUNT = 12;
     private Cookie cookie;
 
     public CookieTracker(Cookie cookie) {
@@ -28,7 +32,7 @@ public class CookieTracker {
 
     public int count() {
         if(cookie == null) return 0;
-        return parseValue(cookie.getValue()).length;
+        return SHEET_COUNT - remainingYears().size();
     }
     
     protected static String[] parseValue(String value) {
@@ -61,5 +65,21 @@ public class CookieTracker {
         String[] years = parseValue(cookie.getValue());
         Arrays.sort(years);
         return years;
+    }
+    
+    private ArrayList<String> validYears() {
+        return new ArrayList<String>(Arrays.asList("2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014"));
+    }
+
+    public List<String> remainingYears() {
+        ArrayList<String> allYears = validYears();
+        for(String year : years()) {
+            allYears.remove(year);
+        }
+        return allYears;
+    }
+
+    public boolean success() {
+        return remainingYears().size()==0;
     }
 }
