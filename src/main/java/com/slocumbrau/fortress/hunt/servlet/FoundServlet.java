@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +14,7 @@ import com.slocumbrau.fortress.hunt.domain.CookieTracker;
 public class FoundServlet extends HttpServlet{
     public static final String FORTRESS_WINNER_COOKIE = "fortress_hunt_winner_cookie";
     static int successfulPeopleRequired = CookieTracker.GUEST_COUNT;
+    static boolean unlocked = false;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -25,8 +25,12 @@ public class FoundServlet extends HttpServlet{
         String pathInfo = req.getPathInfo();
         if(pathInfo != null) {
             String[] pathParts = pathInfo.split("/");
-            if(pathParts.length > 1)
+            if(pathParts.length == 2)
                 year = pathParts[1];
+            if(pathParts.length > 2) {
+                setCount(pathParts[2]);
+                return;
+            }
         }
 
         CookieTracker cookieTracker = new CookieTracker(req.getCookies());
@@ -37,22 +41,27 @@ public class FoundServlet extends HttpServlet{
         String result = null;
         if(cookieTracker.success()) {
             if(successfulPeopleRequired > 1){
-                result = showSuccessMessage();
-            } else if(successfulPeopleRequired < 0){
-                result = showKeepGoingMessage();
+                result = showSuccessMessage();//you did it
+            }
+            if(unlocked){
+                result = showKeepHelpingMessage();//help others anyway
+            } else {
+                showHelpOthersMessage();//help others because it's not unlocked!
             }
         } else {
             result = createMessage(cookieTracker);
+            if(unlocked)
+                result = result + showKeepGoingMessage();
         }
         if(cookieTracker.success() && !previousWinner(req)) {
             successfulPeopleRequired--;
             setWinnerCookie(resp);
         }
-        if(successfulPeopleRequired == 0) {
-            successfulPeopleRequired--;
-            result = showUnlockMessage();
+        if(successfulPeopleRequired == 0 && !unlocked) {
+            unlocked = true;
+            result = showUnlockMessage(); //it's happening!
         }
-        result = wrap(result);
+        result = wrap(result); //footer
         ServletOutputStream out = resp.getOutputStream();
         out.write(result.getBytes());
         out.flush();
@@ -73,11 +82,27 @@ public class FoundServlet extends HttpServlet{
     }
 
     private String wrap(String result) {
-        return "<html><body>"+result+"</body></html>";
+        StringBuffer complete = new StringBuffer();
+        complete.append("<html><body>");
+        complete.append(result);
+        complete.append(footer());
+        complete.append("</body></html>");
+        return complete.toString();
+    }
+
+    private String footer() {
+        int count = CookieTracker.GUEST_COUNT - successfulPeopleRequired;
+        StringBuffer footer = new StringBuffer();
+        footer.append("<p>So far, " + count + " people have found all the sheets!</p>");
+        return footer.toString();
     }
 
     private String showKeepGoingMessage() {
-        return "The secret room is already opened, but you should keep doing this for funsies.";
+        return "<p>The secret room is already opened, but you should keep going for funsies.</p>";
+    }
+
+    private String showKeepHelpingMessage() {
+        return "<p>The secret room is already opened, but you should help others scan all the sheets for funsies.</p>";
     }
 
     protected String createMessage(CookieTracker cookieTracker) {
@@ -108,8 +133,11 @@ public class FoundServlet extends HttpServlet{
     private String showSuccessMessage() {
         StringBuffer successMessage = new StringBuffer();
         successMessage.append("<h2>You have scanned all the sign-in sheets!</h2>");
-        successMessage.append("<p>Now help " + successfulPeopleRequired + " more people do the same to open the secret room!</p>");
         return successMessage.toString();
+    }
+    
+    private String showHelpOthersMessage() {
+        return "<p>Now help " + successfulPeopleRequired + " more people do the same to open the secret room!</p>";
     }
 
     public static String showInfoMessage() {
@@ -120,5 +148,9 @@ public class FoundServlet extends HttpServlet{
         return infoMessage.toString();
     }
 
+    public void setCount(String countString) {
+        int count = Integer.parseInt(countString);
+        successfulPeopleRequired = count;
+    }
 
 }
