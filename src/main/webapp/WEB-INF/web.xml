@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app 
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <servlet>
+      <servlet-name>fortress</servlet-name>
+      <servlet-class>com.slocumbrau.fortress.hunt.servlet.FoundServlet</servlet-class>
+    </servlet>
+    <servlet>
+      <servlet-name>welcome</servlet-name>
+      <servlet-class>com.slocumbrau.fortress.hunt.servlet.WelcomeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>fortress</servlet-name>
+      <url-pattern>/fortress/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>welcome</servlet-name>
+      <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
+</web-app>

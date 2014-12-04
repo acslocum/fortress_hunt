@@ -12,10 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.slocumbrau.fortress.hunt.domain.CookieTracker;
 
-@WebServlet(
-        name = "FoundASheet",
-        urlPatterns = {"/fortress/*"}
-    )
 public class FoundServlet extends HttpServlet{
     public static final String FORTRESS_WINNER_COOKIE = "fortress_hunt_winner_cookie";
     static int successfulPeopleRequired = CookieTracker.GUEST_COUNT;
@@ -118,8 +114,9 @@ public class FoundServlet extends HttpServlet{
 
     public static String showInfoMessage() {
         StringBuffer infoMessage = new StringBuffer();
-        infoMessage.append("These sign in sheets are scattered throughout the fort. When you find one, scan the QR code with a QR reader (which you just did).");
-        infoMessage.append("When "+CookieTracker.GUEST_COUNT+" people find all "+ CookieTracker.SHEET_COUNT + " of them, a secret fortress room will be opened.");
+        infoMessage.append("<h2>Welcome to the Fortress 20th Anniversary Sheet Hunt!</h2>>");
+        infoMessage.append("<p>Sign in sheets are scattered throughout the fort. When you find one, scan the QR code with a QR reader (which you just did).</p>");
+        infoMessage.append("<p>When "+CookieTracker.GUEST_COUNT+" people find all "+ CookieTracker.SHEET_COUNT + " of them, a <b>secret</b> fortress room will be opened.</p>");
         return infoMessage.toString();
     }
 
