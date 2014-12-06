@@ -93,7 +93,7 @@ public class FoundServlet extends HttpServlet{
     private String footer() {
         int count = CookieTracker.GUEST_COUNT - successfulPeopleRequired;
         StringBuffer footer = new StringBuffer();
-        footer.append("<p>So far, " + count + " people have found all the sheets!</p>");
+        footer.append("<p>So far, " + count + " people have found all the sheets.</p>");
         return footer.toString();
     }
 
@@ -111,7 +111,7 @@ public class FoundServlet extends HttpServlet{
         if(count == 1) {
             result.append(showInfoMessage());
         }
-        result.append("<h2>You have found " + count + " sheets so far!</h2>");
+        result.append("<h2>You have found " + count + " sheets so far</h2>");
         for(String year : cookieTracker.years()) {
             result.append("<p>"+year+"</p>");
         }
@@ -137,12 +137,12 @@ public class FoundServlet extends HttpServlet{
     }
     
     private String showHelpOthersMessage() {
-        return "<p>Now help " + successfulPeopleRequired + " more people do the same to open the secret room!</p>";
+        return "<p>Now help " + successfulPeopleRequired + " more people do the same to open the secret room.</p>";
     }
 
     public static String showInfoMessage() {
         StringBuffer infoMessage = new StringBuffer();
-        infoMessage.append("<h2>Welcome to the Fortress 20th Anniversary Sheet Hunt!</h2>>");
+        infoMessage.append("<h2>Welcome to the Fortress 20th Anniversary Sheet Hunt!</h2>");
         infoMessage.append("<p>Sign in sheets are scattered throughout the fort. When you find one, scan the QR code with a QR reader (which you just did).</p>");
         infoMessage.append("<p>When "+CookieTracker.GUEST_COUNT+" people find all "+ CookieTracker.SHEET_COUNT + " of them, a <b>secret</b> fortress room will be opened.</p>");
         return infoMessage.toString();
